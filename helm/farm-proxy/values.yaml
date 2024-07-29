@@ -44,6 +44,8 @@ envFrom:
 podAnnotations: {}
 podLabels: {}
 
+args: []
+
 podSecurityContext:
   {}
   # fsGroup: 2000
