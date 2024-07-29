@@ -74,6 +74,8 @@ containerPorts:
 service:
   type: ClusterIP
 
+  annotations: {}
+
   ports:
     - port: 8080
       targetPort: http

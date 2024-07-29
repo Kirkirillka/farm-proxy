@@ -4,6 +4,8 @@ metadata:
   name: {{ include "farm-proxy.fullname" . }}
   labels:
     {{- include "farm-proxy.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.service.annotations | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports: {{- toYaml .Values.service.ports | nindent 4 }}
