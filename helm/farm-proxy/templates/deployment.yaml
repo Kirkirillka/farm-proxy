@@ -13,10 +13,11 @@ spec:
       {{- include "farm-proxy.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        checksum/config: '{{ tpl (toYaml .Values.runtimeConfig) . | sha256sum }}'
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "farm-proxy.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
@@ -46,17 +47,24 @@ spec:
             {{- toYaml .Values.redinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+            - name: runtime-config
+              mountPath: /etc/runtime-config
+          {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
+            - name: CONFIG_FILE
+              value: /etc/runtime-config/config.toml
             {{- toYaml .Values.env | nindent 12 }}
           envFrom:
             {{- toYaml .Values.envFrom | nindent 12 }}
-      {{- with .Values.volumes }}
       volumes:
-        {{- toYaml . | nindent 8 }}
+        - name: runtime-config
+          configMap:
+            name: {{ include "farm-proxy.fullname" . }}-runtime
+      {{- with .Values.volumes }}
+      {{- toYaml .Values.volumes | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
